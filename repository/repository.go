@@ -24,3 +24,14 @@ func (repo *Repository) GetCustomers() (*[]domain.CustomerEntity, error) {
 
 	return &customers, nil
 }
+
+func (repo *Repository) GetItems() (*[]domain.ItemEntity, error) {
+	var items []domain.ItemEntity
+
+	result := repo.client.Find(&items)
+	if err := result.Error; err != nil {
+		return nil, err
+	}
+
+	return &items, nil
+}

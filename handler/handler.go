@@ -11,6 +11,7 @@ import (
 
 type Usecase interface {
 	GetCustomers(ctx context.Context) (*domain.MultipleResponse[domain.CustomerEntity], error)
+	GetItems(ctx context.Context) (*domain.MultipleResponse[domain.ItemEntity], error)
 }
 
 type ResponseError struct {
@@ -28,6 +29,21 @@ func NewHandler(usecase Usecase) *Handler {
 func (h *Handler) GetCustomers(e echo.Context) error {
 	ctx := e.Request().Context()
 	resp, err := h.usecase.GetCustomers(ctx)
+	if err != nil {
+		return e.JSON(
+			http.StatusInternalServerError,
+			ResponseError{Message: domain.ErrInternalServerError.Error()},
+		)
+	}
+
+	e.Response().Header().Set(echo.HeaderContentType, echo.MIMEApplicationJSONCharsetUTF8)
+	e.Response().WriteHeader(http.StatusOK)
+	return json.NewEncoder(e.Response()).Encode(resp)
+}
+
+func (h *Handler) GetItems(e echo.Context) error {
+	ctx := e.Request().Context()
+	resp, err := h.usecase.GetItems(ctx)
 	if err != nil {
 		return e.JSON(
 			http.StatusInternalServerError,

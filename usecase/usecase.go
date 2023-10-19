@@ -12,6 +12,7 @@ var (
 
 type Repository interface {
 	GetCustomers() (*[]domain.CustomerEntity, error)
+	GetItems() (*[]domain.ItemEntity, error)
 }
 
 type Usecase struct {
@@ -36,6 +37,20 @@ func (u *Usecase) GetCustomers(ctx context.Context) (*domain.MultipleResponse[do
 	}
 
 	return &domain.MultipleResponse[domain.CustomerEntity]{
+		Data: *resp,
+	}, nil
+}
+
+func (u *Usecase) GetItems(ctx context.Context) (*domain.MultipleResponse[domain.ItemEntity], error) {
+	ctx, cancel := context.WithTimeout(ctx, u.ContextTimeout)
+	defer cancel()
+
+	resp, err := u.Repo.GetItems()
+	if err != nil {
+		return nil, err
+	}
+
+	return &domain.MultipleResponse[domain.ItemEntity]{
 		Data: *resp,
 	}, nil
 }

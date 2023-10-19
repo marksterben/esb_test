@@ -17,6 +17,7 @@ const (
 
 type Handler interface {
 	GetCustomers(c echo.Context) error
+	GetItems(c echo.Context) error
 }
 
 type Server struct {
