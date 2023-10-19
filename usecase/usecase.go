@@ -15,6 +15,7 @@ type Repository interface {
 	GetCustomers() (*[]domain.CustomerEntity, error)
 	GetItems() (*[]domain.ItemEntity, error)
 	GetInvoices(request domain.InvoiceRequest) (*[]domain.InvoiceEntity, error)
+	FindOneInvoice(request string) (*domain.InvoiceEntity, error)
 	CreateInvoice(request domain.PostInvoiceRequest) (*domain.InvoiceEntity, error)
 	GetMaxInvoiceID() (*string, error)
 }
@@ -77,6 +78,20 @@ func (u *Usecase) GetInvoices(ctx context.Context, request domain.InvoiceRequest
 	}
 
 	return &domain.ApiResponse[[]domain.InvoiceEntity]{
+		Data: resp,
+	}, nil
+}
+
+func (u *Usecase) FindOneInvoice(ctx context.Context, request string) (*domain.ApiResponse[domain.InvoiceEntity], error) {
+	ctx, cancel := context.WithTimeout(ctx, u.ContextTimeout)
+	defer cancel()
+
+	resp, err := u.Repo.FindOneInvoice(request)
+	if err != nil {
+		return nil, err
+	}
+
+	return &domain.ApiResponse[domain.InvoiceEntity]{
 		Data: resp,
 	}, nil
 }

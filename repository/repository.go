@@ -78,6 +78,17 @@ func (repo *Repository) GetInvoices(request domain.InvoiceRequest) (*[]domain.In
 	return &invoices, nil
 }
 
+func (repo *Repository) FindOneInvoice(request string) (*domain.InvoiceEntity, error) {
+	var invoice domain.InvoiceEntity
+
+	result := repo.client.Preload("Customer").Preload("Details").Where("invoices.id = ?", request).Find(&invoice)
+	if err := result.Error; err != nil {
+		return nil, err
+	}
+
+	return &invoice, nil
+}
+
 func (repo *Repository) CreateInvoice(request domain.PostInvoiceRequest) (*domain.InvoiceEntity, error) {
 	dateFormat := "2006-01-02"
 	issueDate, err := time.Parse(dateFormat, request.IssueDate)

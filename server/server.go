@@ -19,6 +19,7 @@ type Handler interface {
 	GetCustomers(c echo.Context) error
 	GetItems(c echo.Context) error
 	GetInvoices(c echo.Context) error
+	FindOneInvoice(c echo.Context) error
 	CreateInvoice(c echo.Context) error
 }
 
