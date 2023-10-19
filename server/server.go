@@ -12,10 +12,11 @@ import (
 )
 
 const (
-	APP_NAME = "mp-svc-catalog"
+	APP_NAME = "esb"
 )
 
 type Handler interface {
+	GetCustomers(c echo.Context) error
 }
 
 type Server struct {
