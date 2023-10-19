@@ -1,0 +1,177 @@
+{
+	"info": {
+		"_postman_id": "d880a7dd-3a6c-4b83-aeb2-142e0fbd7545",
+		"name": "ESB TEST",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "30615777"
+	},
+	"item": [
+		{
+			"name": "Get Items",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseIUrl}}/items",
+					"host": [
+						"{{baseIUrl}}"
+					],
+					"path": [
+						"items"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Customers",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseIUrl}}/customers",
+					"host": [
+						"{{baseIUrl}}"
+					],
+					"path": [
+						"customers"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Invoices",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseIUrl}}/invoices?page=0&limit=10",
+					"host": [
+						"{{baseIUrl}}"
+					],
+					"path": [
+						"invoices"
+					],
+					"query": [
+						{
+							"key": "invoice_id",
+							"value": "00",
+							"disabled": true
+						},
+						{
+							"key": "subject",
+							"value": "tech",
+							"disabled": true
+						},
+						{
+							"key": "total_item",
+							"value": "2",
+							"disabled": true
+						},
+						{
+							"key": "customer",
+							"value": "clar",
+							"disabled": true
+						},
+						{
+							"key": "status",
+							"value": "unpaid",
+							"disabled": true
+						},
+						{
+							"key": "issue_date",
+							"value": "2022-05-15",
+							"disabled": true
+						},
+						{
+							"key": "due_date",
+							"value": "2022-11-26",
+							"disabled": true
+						},
+						{
+							"key": "page",
+							"value": "0"
+						},
+						{
+							"key": "limit",
+							"value": "10"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Find One Invoices",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseIUrl}}/invoice/0002",
+					"host": [
+						"{{baseIUrl}}"
+					],
+					"path": [
+						"invoice",
+						"0002"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create Invoice",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"subject\": \"Tech Team Monthly Catchup\",\n    \"issueDate\": \"2022-05-15\",\n    \"dueDate\": \"2022-11-25\",\n    \"totalItem\": 3,\n    \"subtotal\": 90000,\n    \"tax\": 9000,\n    \"grandtotal\": 99000,\n    \"customerId\": 3,\n    \"details\": [\n        {\n            \"itemId\": 1,\n            \"qty\": 1,\n            \"price\": 20000,\n            \"amount\": 20000\n        },\n        {\n            \"itemId\": 2,\n            \"qty\": 2,\n            \"price\": 15000,\n            \"amount\": 30000\n        },\n        {\n            \"itemId\": 4,\n            \"qty\": 1,\n            \"price\": 40000,\n            \"amount\": 40000\n        }\n    ]\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseIUrl}}/invoice",
+					"host": [
+						"{{baseIUrl}}"
+					],
+					"path": [
+						"invoice"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update Invoice",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"subject\": \"Tech Team Monthly Catchup V3\",\n    \"issueDate\": \"2022-04-15\",\n    \"dueDate\": \"2022-10-24\",\n    \"totalItem\": 3,\n    \"subtotal\": 96000,\n    \"tax\": 9600,\n    \"grandtotal\": 99600,\n    \"customerId\": 3,\n    \"status\": \"paid\",\n    \"payment\": 99600,\n    \"details\": [\n        {\n            \"itemId\": 1,\n            \"qty\": 1,\n            \"price\": 20000,\n            \"amount\": 20000\n        },\n        {\n            \"itemId\": 5,\n            \"qty\": 3,\n            \"price\": 12000,\n            \"amount\": 36000\n        },\n        {\n            \"itemId\": 4,\n            \"qty\": 1,\n            \"price\": 40000,\n            \"amount\": 40000\n        }\n    ]\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseIUrl}}/invoice/0003",
+					"host": [
+						"{{baseIUrl}}"
+					],
+					"path": [
+						"invoice",
+						"0003"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
