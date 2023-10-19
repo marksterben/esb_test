@@ -3,6 +3,7 @@ package usecase
 import (
 	"context"
 	"esb/domain"
+	"esb/helper"
 	"time"
 )
 
@@ -13,6 +14,8 @@ var (
 type Repository interface {
 	GetCustomers() (*[]domain.CustomerEntity, error)
 	GetItems() (*[]domain.ItemEntity, error)
+	CreateInvoice(request domain.PostInvoiceRequest) (*domain.InvoiceEntity, error)
+	GetMaxInvoiceID() (*string, error)
 }
 
 type Usecase struct {
@@ -27,7 +30,7 @@ func NewUsecase(repo Repository, time time.Duration) *Usecase {
 	}
 }
 
-func (u *Usecase) GetCustomers(ctx context.Context) (*domain.MultipleResponse[domain.CustomerEntity], error) {
+func (u *Usecase) GetCustomers(ctx context.Context) (*domain.ApiResponse[[]domain.CustomerEntity], error) {
 	ctx, cancel := context.WithTimeout(ctx, u.ContextTimeout)
 	defer cancel()
 
@@ -36,12 +39,12 @@ func (u *Usecase) GetCustomers(ctx context.Context) (*domain.MultipleResponse[do
 		return nil, err
 	}
 
-	return &domain.MultipleResponse[domain.CustomerEntity]{
+	return &domain.ApiResponse[[]domain.CustomerEntity]{
 		Data: *resp,
 	}, nil
 }
 
-func (u *Usecase) GetItems(ctx context.Context) (*domain.MultipleResponse[domain.ItemEntity], error) {
+func (u *Usecase) GetItems(ctx context.Context) (*domain.ApiResponse[[]domain.ItemEntity], error) {
 	ctx, cancel := context.WithTimeout(ctx, u.ContextTimeout)
 	defer cancel()
 
@@ -50,7 +53,29 @@ func (u *Usecase) GetItems(ctx context.Context) (*domain.MultipleResponse[domain
 		return nil, err
 	}
 
-	return &domain.MultipleResponse[domain.ItemEntity]{
+	return &domain.ApiResponse[[]domain.ItemEntity]{
 		Data: *resp,
+	}, nil
+}
+
+func (u *Usecase) CreateInvoice(ctx context.Context, request domain.PostInvoiceRequest) (*domain.ApiResponse[domain.InvoiceEntity], error) {
+	ctx, cancel := context.WithTimeout(ctx, u.ContextTimeout)
+	defer cancel()
+
+	stringID, err := u.Repo.GetMaxInvoiceID()
+	if err != nil {
+		return nil, err
+	}
+
+	request.ID = helper.IncrementNumberString(*stringID)
+
+	resp, err := u.Repo.CreateInvoice(request)
+	if err != nil {
+		return nil, err
+	}
+
+	return &domain.ApiResponse[domain.InvoiceEntity]{
+		Data:    *resp,
+		Message: "Invoice successfully created",
 	}, nil
 }

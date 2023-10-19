@@ -1,5 +1,6 @@
 package domain
 
-type MultipleResponse[T any] struct {
-	Data []T `json:"data"`
+type ApiResponse[T any] struct {
+	Message string `json:"message,omitempty"`
+	Data    T      `json:"data,omitempty"`
 }
