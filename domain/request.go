@@ -1,15 +1,15 @@
 package domain
 
 type InvoiceRequest struct {
-	InvoiceID  *string `query:invoice_id`
-	IssueDate  *string `query:issue_date`
-	Subject    *string `query:subject`
-	TotalItems *int    `query:total_items`
-	Customer   *string `query:customer`
-	DueDate    *string `query:due_date`
-	Status     *string `query:status`
-	Limit      *int    `query:limit`
-	From       *int    `query:from`
+	InvoiceID string `query:"invoice_id"`
+	IssueDate string `query:"issue_date"`
+	Subject   string `query:"subject"`
+	TotalItem *int   `query:"total_item"`
+	Customer  string `query:"customer"`
+	DueDate   string `query:"due_date"`
+	Status    string `query:"status"`
+	Limit     int    `query:"limit"`
+	Page      int    `query:"page"`
 }
 
 type PostInvoiceRequest struct {

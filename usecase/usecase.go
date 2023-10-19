@@ -14,6 +14,7 @@ var (
 type Repository interface {
 	GetCustomers() (*[]domain.CustomerEntity, error)
 	GetItems() (*[]domain.ItemEntity, error)
+	GetInvoices(request domain.InvoiceRequest) (*[]domain.InvoiceEntity, error)
 	CreateInvoice(request domain.PostInvoiceRequest) (*domain.InvoiceEntity, error)
 	GetMaxInvoiceID() (*string, error)
 }
@@ -40,7 +41,7 @@ func (u *Usecase) GetCustomers(ctx context.Context) (*domain.ApiResponse[[]domai
 	}
 
 	return &domain.ApiResponse[[]domain.CustomerEntity]{
-		Data: *resp,
+		Data: resp,
 	}, nil
 }
 
@@ -54,7 +55,29 @@ func (u *Usecase) GetItems(ctx context.Context) (*domain.ApiResponse[[]domain.It
 	}
 
 	return &domain.ApiResponse[[]domain.ItemEntity]{
-		Data: *resp,
+		Data: resp,
+	}, nil
+}
+
+func (u *Usecase) GetInvoices(ctx context.Context, request domain.InvoiceRequest) (*domain.ApiResponse[[]domain.InvoiceEntity], error) {
+	ctx, cancel := context.WithTimeout(ctx, u.ContextTimeout)
+	defer cancel()
+
+	if request.Limit < 1 || request.Limit > 100 {
+		request.Limit = default_size
+	}
+
+	if request.Page < 0 {
+		request.Page = 0
+	}
+
+	resp, err := u.Repo.GetInvoices(request)
+	if err != nil {
+		return nil, err
+	}
+
+	return &domain.ApiResponse[[]domain.InvoiceEntity]{
+		Data: resp,
 	}, nil
 }
 
@@ -75,7 +98,7 @@ func (u *Usecase) CreateInvoice(ctx context.Context, request domain.PostInvoiceR
 	}
 
 	return &domain.ApiResponse[domain.InvoiceEntity]{
-		Data:    *resp,
+		Data:    resp,
 		Message: "Invoice successfully created",
 	}, nil
 }

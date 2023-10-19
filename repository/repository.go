@@ -37,6 +37,47 @@ func (repo *Repository) GetItems() (*[]domain.ItemEntity, error) {
 	return &items, nil
 }
 
+func (repo *Repository) GetInvoices(request domain.InvoiceRequest) (*[]domain.InvoiceEntity, error) {
+	var invoices []domain.InvoiceEntity
+
+	query := repo.client.Offset(request.Page * request.Limit).Limit(request.Limit).Joins("Customer")
+
+	if len(request.InvoiceID) > 0 {
+		query.Where("invoices.id like ?", ("%" + request.InvoiceID + "%"))
+	}
+
+	if len(request.Subject) > 0 {
+		query.Where("subject like ?", ("%" + request.Subject + "%"))
+	}
+
+	if request.TotalItem != nil {
+		query.Where("total_item = ?", *request.TotalItem)
+	}
+
+	if len(request.Customer) > 0 {
+		query.Where("Customer.name like ?", ("%" + request.Customer + "%"))
+	}
+
+	if len(request.Status) > 0 {
+		query.Where("status = ?", request.Status)
+	}
+
+	if len(request.IssueDate) > 0 {
+		query.Where("issue_date = ?", request.IssueDate)
+	}
+
+	if len(request.DueDate) > 0 {
+		query.Where("due_date = ?", request.DueDate)
+	}
+
+	result := query.Find(&invoices)
+	if err := result.Error; err != nil {
+		return nil, err
+	}
+
+	return &invoices, nil
+}
+
 func (repo *Repository) CreateInvoice(request domain.PostInvoiceRequest) (*domain.InvoiceEntity, error) {
 	dateFormat := "2006-01-02"
 	issueDate, err := time.Parse(dateFormat, request.IssueDate)
@@ -68,7 +109,7 @@ func (repo *Repository) CreateInvoice(request domain.PostInvoiceRequest) (*domai
 		Tax:        request.Tax,
 		Grandtotal: request.Grandtotal,
 		CustomerID: request.CustomerID,
-		Details:    details,
+		Details:    &details,
 	}
 
 	if err := repo.client.Create(invoice).Error; err != nil {
