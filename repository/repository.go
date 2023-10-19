@@ -7,6 +7,10 @@ import (
 	"gorm.io/gorm"
 )
 
+var (
+	dateFormat = "2006-01-02"
+)
+
 type Repository struct {
 	client *gorm.DB
 }
@@ -89,8 +93,7 @@ func (repo *Repository) FindOneInvoice(request string) (*domain.InvoiceEntity, e
 	return &invoice, nil
 }
 
-func (repo *Repository) CreateInvoice(request domain.PostInvoiceRequest) (*domain.InvoiceEntity, error) {
-	dateFormat := "2006-01-02"
+func (repo *Repository) CreateInvoice(request domain.InvoiceFormRequest) (*domain.InvoiceEntity, error) {
 	issueDate, err := time.Parse(dateFormat, request.IssueDate)
 	if err != nil {
 		return nil, err
@@ -128,6 +131,62 @@ func (repo *Repository) CreateInvoice(request domain.PostInvoiceRequest) (*domai
 	}
 
 	return invoice, nil
+}
+
+func (repo *Repository) UpdateInvoice(request domain.InvoiceFormRequest) (*domain.InvoiceEntity, error) {
+	issueDate, err := time.Parse(dateFormat, request.IssueDate)
+	if err != nil {
+		return nil, err
+	}
+	dueDate, err := time.Parse(dateFormat, request.DueDate)
+	if err != nil {
+		return nil, err
+	}
+
+	var invoice domain.InvoiceEntity
+	err = repo.client.Transaction(func(tx *gorm.DB) error {
+		if err := repo.client.First(&invoice, request.ID).Error; err != nil {
+			return err
+		}
+		invoice.Subject = request.Subject
+		invoice.IssueDate = issueDate
+		invoice.DueDate = dueDate
+		invoice.TotalItem = request.TotalItem
+		invoice.Subtotal = request.Subtotal
+		invoice.Tax = request.Tax
+		invoice.Grandtotal = request.Grandtotal
+		invoice.Payment = request.Payment
+		invoice.CustomerID = request.CustomerID
+		invoice.Status = request.Status
+
+		var details []domain.InvoiceDetailEntity
+		for _, elm := range request.Details {
+			details = append(details, domain.InvoiceDetailEntity{
+				ItemID: elm.ItemID,
+				Qty:    elm.Qty,
+				Price:  elm.Price,
+				Amount: elm.Amount,
+			})
+		}
+
+		invoice.Details = &details
+
+		if err := repo.client.Where("invoice_id = ?", invoice.ID).Delete(&domain.InvoiceDetailEntity{}).Error; err != nil {
+			return err
+		}
+
+		if err := repo.client.Save(&invoice).Error; err != nil {
+			return err
+		}
+
+		return nil
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &invoice, nil
 }
 
 func (repo *Repository) GetMaxInvoiceID() (*string, error) {

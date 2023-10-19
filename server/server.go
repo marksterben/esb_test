@@ -21,6 +21,7 @@ type Handler interface {
 	GetInvoices(c echo.Context) error
 	FindOneInvoice(c echo.Context) error
 	CreateInvoice(c echo.Context) error
+	UpdateInvoice(c echo.Context) error
 }
 
 type Server struct {

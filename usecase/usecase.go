@@ -16,7 +16,8 @@ type Repository interface {
 	GetItems() (*[]domain.ItemEntity, error)
 	GetInvoices(request domain.InvoiceRequest) (*[]domain.InvoiceEntity, error)
 	FindOneInvoice(request string) (*domain.InvoiceEntity, error)
-	CreateInvoice(request domain.PostInvoiceRequest) (*domain.InvoiceEntity, error)
+	CreateInvoice(request domain.InvoiceFormRequest) (*domain.InvoiceEntity, error)
+	UpdateInvoice(request domain.InvoiceFormRequest) (*domain.InvoiceEntity, error)
 	GetMaxInvoiceID() (*string, error)
 }
 
@@ -96,7 +97,7 @@ func (u *Usecase) FindOneInvoice(ctx context.Context, request string) (*domain.A
 	}, nil
 }
 
-func (u *Usecase) CreateInvoice(ctx context.Context, request domain.PostInvoiceRequest) (*domain.ApiResponse[domain.InvoiceEntity], error) {
+func (u *Usecase) CreateInvoice(ctx context.Context, request domain.InvoiceFormRequest) (*domain.ApiResponse[domain.InvoiceEntity], error) {
 	ctx, cancel := context.WithTimeout(ctx, u.ContextTimeout)
 	defer cancel()
 
@@ -120,5 +121,20 @@ func (u *Usecase) CreateInvoice(ctx context.Context, request domain.PostInvoiceR
 	return &domain.ApiResponse[domain.InvoiceEntity]{
 		Data:    resp,
 		Message: "Invoice successfully created",
+	}, nil
+}
+
+func (u *Usecase) UpdateInvoice(ctx context.Context, request domain.InvoiceFormRequest) (*domain.ApiResponse[domain.InvoiceEntity], error) {
+	ctx, cancel := context.WithTimeout(ctx, u.ContextTimeout)
+	defer cancel()
+
+	resp, err := u.Repo.UpdateInvoice(request)
+	if err != nil {
+		return nil, err
+	}
+
+	return &domain.ApiResponse[domain.InvoiceEntity]{
+		Data:    resp,
+		Message: "Invoice successfully updated",
 	}, nil
 }

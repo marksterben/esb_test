@@ -12,8 +12,8 @@ type InvoiceRequest struct {
 	Page      int    `query:"page"`
 }
 
-type PostInvoiceRequest struct {
-	ID         string
+type InvoiceFormRequest struct {
+	ID         string `param:"id"`
 	Subject    string `form:"subject"`
 	IssueDate  string `form:"issueDate"`
 	DueDate    string `form:"dueDate"`
@@ -21,11 +21,14 @@ type PostInvoiceRequest struct {
 	Subtotal   int    `form:"subtotal"`
 	Tax        int    `form:"tax"`
 	Grandtotal int    `form:"grandtotal"`
+	Payment    int    `form:"payment"`
+	Status     string `form:"status"`
 	CustomerID int    `form:"customerId"`
 	Details    []struct {
-		ItemID int `form:"itemId"`
-		Qty    int `form:"qty"`
-		Price  int `form:"price"`
-		Amount int `form:"amount"`
+		ID     *int `form:"id"`
+		ItemID int  `form:"itemId"`
+		Qty    int  `form:"qty"`
+		Price  int  `form:"price"`
+		Amount int  `form:"amount"`
 	} `form:"details"`
 }
