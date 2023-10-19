@@ -23,5 +23,5 @@
 - **POST _/api/invoice_**
   : This endpoint use to create new invoice
 
-- **POST _/api/invoice/:id_**
+- **PUT _/api/invoice/:id_**
   : This endpoint use to update invoice by its id
