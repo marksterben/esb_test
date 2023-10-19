@@ -105,7 +105,12 @@ func (u *Usecase) CreateInvoice(ctx context.Context, request domain.PostInvoiceR
 		return nil, err
 	}
 
-	request.ID = helper.IncrementNumberString(*stringID)
+	stringID, err = helper.IncrementNumberString(*stringID)
+	if err != nil {
+		return nil, err
+	}
+
+	request.ID = *stringID
 
 	resp, err := u.Repo.CreateInvoice(request)
 	if err != nil {
